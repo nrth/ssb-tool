@@ -88,7 +88,8 @@ namespace ssb_tool
                 Vdf.Convert(new StreamReader(new MemoryStream(Encoding.UTF8.GetBytes(cur.ToString()))), output);
 
                 output.Close();
-                output.Dispose();
+                output.Dispose(); // make sure there are no references to this file left
+
                 touchFile(historyPath);
             }
         }
