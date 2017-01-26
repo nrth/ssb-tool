@@ -15,6 +15,15 @@ using Newtonsoft.Json.Linq;
 
 namespace ssb_tool
 {
+    // TODO
+    // Refactoring: - separate business logic for serverdata and user handling
+    //              - error handling
+    //              - implement confirmation dialogs
+    //              - improve json2vdf converter
+    //              - dependency cleanup
+    //              - solution for unusual (other drive etc.) steam path
+    //              - improve performance (stream converting etc.)
+
     public partial class App : Form
     {
         private String userdataPath = @"C:\Program Files (x86)\Steam\userdata\";
