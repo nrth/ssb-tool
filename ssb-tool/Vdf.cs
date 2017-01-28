@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -10,6 +11,11 @@ namespace ssb_tool
 {
     public static class Vdf
     {
+        private static String genIndent(int n)
+        {
+            return new String('\t', n);
+        }
+
         public static void Convert(StreamReader input, StreamWriter output)
         {
             // https://developer.valvesoftware.com/wiki/KeyValues#Value_Types
@@ -18,43 +24,39 @@ namespace ssb_tool
                 int indent = 0;
                 int depth = 0;
                 dynamic last = null;
+
                 while (reader.Read())
                 {
                     switch (reader.TokenType)
                     {
                         case JsonToken.StartObject:
-                            if (depth == 0)
-                            {
-                                depth++;
-                                break;
-                            }
-                            if (last == JsonToken.PropertyName)
-                            {
-                                output.WriteLine("");
-                            }
-                            output.WriteLine(new String('\t', indent) + "{");
+                            // check for wrapping json root
+                            if (depth == 0) { depth++; break; };
+                            // insert linebreak on further nesting
+                            if (last == JsonToken.PropertyName) { output.Write("\n"); };
+
+                            output.WriteLine(genIndent(indent) + "{");
                             indent++;
                             depth++;
                             break;
                         case JsonToken.EndObject:
                             depth--;
-                            if (depth == 0)
-                            {
-                                break;
-                            }
+                            // skip if we reach the closing of the json root
+                            if (depth == 0) { break; };
+
                             indent--;
-                            output.WriteLine(new String('\t', indent) + "}");
+                            output.WriteLine(genIndent(indent) + "}");
                             break;
                         case JsonToken.PropertyName:
-                            output.Write(new String('\t', indent) + "\"" + reader.Value + "\"");
+                            output.Write(genIndent(indent) + "\"" + reader.Value + "\"");
                             break;
                         case JsonToken.String:
                             output.WriteLine(" \"" + reader.Value + "\"");
                             break;
                         default:
-                            Console.WriteLine("Unsupported JSON2VDF entity");
-                            break;
+                            throw new NotImplementedException("Unsupported entity");
                     }
+
                     last = reader.TokenType;
                 }
             }
