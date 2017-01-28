@@ -16,50 +16,58 @@ namespace ssb_tool
             return new String('\t', n);
         }
 
-        public static void Convert(StreamReader input, StreamWriter output)
+        public static StringWriter Convert(StreamReader input)
+        {
+            return Convert(JObject.Parse(input.ReadToEnd()));
+        }
+
+        public static StringWriter Convert(JObject input)
         {
             // https://developer.valvesoftware.com/wiki/KeyValues#Value_Types
-            using (var reader = new JsonTextReader(input))
+
+            StringWriter output = new StringWriter();
+            JsonReader reader = input.CreateReader();
+
+            int indent = 0;
+            int depth = 0;
+            dynamic last = null;
+
+            while (reader.Read())
             {
-                int indent = 0;
-                int depth = 0;
-                dynamic last = null;
-
-                while (reader.Read())
+                switch (reader.TokenType)
                 {
-                    switch (reader.TokenType)
-                    {
-                        case JsonToken.StartObject:
-                            // check for wrapping json root
-                            if (depth == 0) { depth++; break; };
-                            // insert linebreak on further nesting
-                            if (last == JsonToken.PropertyName) { output.Write("\n"); };
+                    case JsonToken.StartObject:
+                        // check for wrapping json root
+                        if (depth == 0) { depth++; break; };
+                        // insert linebreak on further nesting
+                        if (last == JsonToken.PropertyName) { output.Write("\n"); };
 
-                            output.WriteLine(genIndent(indent) + "{");
-                            indent++;
-                            depth++;
-                            break;
-                        case JsonToken.EndObject:
-                            depth--;
-                            // skip if we reach the closing of the json root
-                            if (depth == 0) { break; };
+                        output.WriteLine(genIndent(indent) + "{");
+                        indent++;
+                        depth++;
+                        break;
+                    case JsonToken.EndObject:
+                        depth--;
+                        // skip if we reach the closing of the json root
+                        if (depth == 0) { break; };
 
-                            indent--;
-                            output.WriteLine(genIndent(indent) + "}");
-                            break;
-                        case JsonToken.PropertyName:
-                            output.Write(genIndent(indent) + "\"" + reader.Value + "\"");
-                            break;
-                        case JsonToken.String:
-                            output.WriteLine(" \"" + reader.Value + "\"");
-                            break;
-                        default:
-                            throw new NotImplementedException("Unsupported entity");
-                    }
-
-                    last = reader.TokenType;
+                        indent--;
+                        output.WriteLine(genIndent(indent) + "}");
+                        break;
+                    case JsonToken.PropertyName:
+                        output.Write(genIndent(indent) + "\"" + reader.Value + "\"");
+                        break;
+                    case JsonToken.String:
+                        output.WriteLine(" \"" + reader.Value + "\"");
+                        break;
+                    default:
+                        throw new NotImplementedException("Unsupported entity");
                 }
+
+                last = reader.TokenType;
             }
+
+            return output;
         }
     }
 }

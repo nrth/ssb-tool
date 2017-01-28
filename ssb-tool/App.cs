@@ -93,9 +93,8 @@ namespace ssb_tool
                 cur.Filters.favorites = imp;
 
                 StreamWriter output = new StreamWriter(historyPath);
-
-                Vdf.Convert(new StreamReader(new MemoryStream(Encoding.UTF8.GetBytes(cur.ToString()))), output);
-
+                output.Write(Vdf.Convert(cur));
+                
                 output.Close();
                 output.Dispose(); // make sure there are no references to this file left
 
