@@ -21,6 +21,11 @@ namespace ssb_tool
             return Convert(JObject.Parse(input.ReadToEnd()));
         }
 
+        public static StringWriter Convert(String input)
+        {
+            return Convert(JObject.Parse(input));
+        }
+        
         public static StringWriter Convert(JObject input)
         {
             // https://developer.valvesoftware.com/wiki/KeyValues#Value_Types

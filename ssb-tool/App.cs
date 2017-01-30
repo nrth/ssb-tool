@@ -27,10 +27,11 @@ namespace ssb_tool
     public partial class App : Form
     {
         private String userdataPath = @"C:\Program Files (x86)\Steam\userdata\";
-        private String historySubPath = @"\7\remote\serverbrowser_hist.vdf";
         private String localconfigPath = @"\config\localconfig.vdf";
 
         private Dictionary<String, String> accounts_ = new Dictionary<String, String>();
+
+        private ServerBrowserHistory _historyManager = new ServerBrowserHistory();
 
         public App()
         {
@@ -64,13 +65,10 @@ namespace ssb_tool
             return accountid;
         }
 
-        private void touchFile(String path)
-        {
-            File.SetLastWriteTimeUtc(path, DateTime.UtcNow);
-        }
-
         private void import_Click(object sender, EventArgs e)
         {
+            String accountid = getIDForAccount(account.Text);
+
             OpenFileDialog openFileDialog = new OpenFileDialog();
             openFileDialog.Filter = "JSON|*.json|TXT|*.txt";
             openFileDialog.Title = "Import Server List Backup";
@@ -79,36 +77,14 @@ namespace ssb_tool
 
             if (openFileDialog.FileName != "")
             {
-                String accountid = getIDForAccount(account.Text);
-                String historyPath = userdataPath + accountid + historySubPath;
-
-                String import = File.ReadAllText(openFileDialog.FileName);
-                String[] current = File.ReadAllLines(historyPath);
-
-                // handle situation with faulty json
-                dynamic imp = JObject.Parse(import);
-                // TODO handle situation where file is empty
-                dynamic cur = VDFConvert.ToJObject(current);
-
-                cur.Filters.favorites = imp;
-
-                StreamWriter output = new StreamWriter(historyPath);
-                output.Write(Vdf.Convert(cur));
-                
-                output.Close();
-                output.Dispose(); // make sure there are no references to this file left
-
-                touchFile(historyPath);
+                _historyManager.Import(accountid, openFileDialog.FileName);
             }
         }
 
         private void backup_Click(object sender, EventArgs e)
         {
+
             String accountid = getIDForAccount(account.Text);
-
-            String path = userdataPath + accountid + historySubPath;
-
-            dynamic hist = VDFConvert.ToJObject(File.ReadAllLines(path));
 
             SaveFileDialog saveFileDialog = new SaveFileDialog();
             saveFileDialog.Filter = "JSON|*.json|TXT|*.txt";
@@ -116,17 +92,9 @@ namespace ssb_tool
             saveFileDialog.FileName = "serverlist.json";
             saveFileDialog.ShowDialog();
 
-            if(saveFileDialog.FileName != "")
+            if (saveFileDialog.FileName != "")
             {
-                StreamWriter file = new StreamWriter(saveFileDialog.FileName);
-
-                file.WriteLine(
-                    Newtonsoft.Json.JsonConvert.SerializeObject(
-                        hist.Filters.favorites,
-                        Formatting.Indented
-                ));
-
-                file.Close();
+                _historyManager.Backup(accountid, saveFileDialog.FileName);
             }
         }
 
@@ -140,11 +108,24 @@ namespace ssb_tool
         {
             String accountid = getIDForAccount(account.Text);
 
-            String path = userdataPath + accountid + historySubPath;
+            String msg = string.Format(
+                                     "You are about to empty your server list"
+                                   + "for the account {0} ({1}), all "
+                                   + "information will be lost. It is "
+                                   + "recommended to make a backup of your "
+                                   + "current server list first. \n\nAre you "
+                                   + "sure you want to continue?", 
+                                   account.Text,
+                                   accountid);
 
-            // TODO ask if you are sure
-            File.WriteAllText(path, string.Empty);
-            touchFile(path);
+            DialogResult confirm = MessageBox.Show(msg,
+                                                   "Confirmation", 
+                                                   MessageBoxButtons.YesNo);
+
+            if (confirm == DialogResult.Yes)
+            {
+                _historyManager.Purge(accountid);
+            }
         }
     }
 }
