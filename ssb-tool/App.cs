@@ -16,20 +16,13 @@ using Newtonsoft.Json.Linq;
 namespace ssb_tool
 {
     // TODO
-    // Refactoring: - separate business logic for serverdata and user handling
-    //              - error handling
-    //              - implement confirmation dialogs
-    //              - improve json2vdf converter
+    //              - better error handling
     //              - dependency cleanup
-    //              - solution for unusual (other drive etc.) steam path
-    //              - improve performance (stream converting etc.)
+    //              - solution for unusual (other drive etc.) steam path (path discovery?)
 
     public partial class App : Form
     {
-        private Dictionary<String, String> accounts_ = new Dictionary<String, String>();
-
         private ServerBrowserHistory _historyManager = new ServerBrowserHistory();
-
         private AccountDiscovery _accountDiscovery = new AccountDiscovery();
 
         public App()
@@ -57,7 +50,7 @@ namespace ssb_tool
 
         private void import_Click(object sender, EventArgs e)
         {
-            String accountid = _accountDiscovery.getID64(account.Text);
+            String accountid = _accountDiscovery.getID3(account.Text);
 
             OpenFileDialog openFileDialog = new OpenFileDialog();
             openFileDialog.Filter = "JSON|*.json|TXT|*.txt";
@@ -74,7 +67,7 @@ namespace ssb_tool
         private void backup_Click(object sender, EventArgs e)
         {
 
-            String accountid = _accountDiscovery.getID64(account.Text);
+            String accountid = _accountDiscovery.getID3(account.Text);
 
             SaveFileDialog saveFileDialog = new SaveFileDialog();
             saveFileDialog.Filter = "JSON|*.json|TXT|*.txt";
@@ -95,7 +88,7 @@ namespace ssb_tool
 
         private void purge_Click(object sender, EventArgs e)
         {
-            String accountid = _accountDiscovery.getID64(account.Text);
+            String accountid = _accountDiscovery.getID3(account.Text);
 
             String msg = string.Format(
                                      "You are about to empty your server list"

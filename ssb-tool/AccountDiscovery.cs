@@ -60,7 +60,7 @@ namespace ssb_tool
             return _accounts.Keys.ToList();
         }
 
-        public String getID64(String personaname)
+        public String getID3(String personaname)
         {
             String ID64 = "";
             _accounts.TryGetValue(personaname, out ID64);
