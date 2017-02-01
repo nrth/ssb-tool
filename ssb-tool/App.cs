@@ -26,12 +26,11 @@ namespace ssb_tool
 
     public partial class App : Form
     {
-        private String userdataPath = @"C:\Program Files (x86)\Steam\userdata\";
-        private String localconfigPath = @"\config\localconfig.vdf";
-
         private Dictionary<String, String> accounts_ = new Dictionary<String, String>();
 
         private ServerBrowserHistory _historyManager = new ServerBrowserHistory();
+
+        private AccountDiscovery _accountDiscovery = new AccountDiscovery();
 
         public App()
         {
@@ -39,35 +38,26 @@ namespace ssb_tool
 
             fetchAccounts();
 
-            account.DataSource = accounts_.Keys.ToList();
+            account.DataSource = _accountDiscovery.getPersonaList();
         }
 
         private void fetchAccounts()
         {
-            String[] accountDirectories = Directory.GetFileSystemEntries(userdataPath);
-
-            foreach (var item in accountDirectories)
+            try
             {
-                String[] localconfigF = File.ReadAllLines(item + localconfigPath);
-                dynamic localconfig = VDFConvert.ToJObject(localconfigF);
-
-                accounts_.Add(
-                    localconfig.UserLocalConfigStore.friends.PersonaName.ToString(),
-                    item.Split('\\').Last()
-                );
+                _accountDiscovery.fetchAccounts();
             }
-        }
-
-        private String getIDForAccount(String accountPersona)
-        {
-            String accountid;
-            accounts_.TryGetValue(accountPersona, out accountid);
-            return accountid;
+            catch
+            {
+                MessageBox.Show("Could not access steam userdata directories.",
+                                "Error");
+                Environment.Exit(-1);
+            }
         }
 
         private void import_Click(object sender, EventArgs e)
         {
-            String accountid = getIDForAccount(account.Text);
+            String accountid = _accountDiscovery.getID64(account.Text);
 
             OpenFileDialog openFileDialog = new OpenFileDialog();
             openFileDialog.Filter = "JSON|*.json|TXT|*.txt";
@@ -84,7 +74,7 @@ namespace ssb_tool
         private void backup_Click(object sender, EventArgs e)
         {
 
-            String accountid = getIDForAccount(account.Text);
+            String accountid = _accountDiscovery.getID64(account.Text);
 
             SaveFileDialog saveFileDialog = new SaveFileDialog();
             saveFileDialog.Filter = "JSON|*.json|TXT|*.txt";
@@ -100,13 +90,12 @@ namespace ssb_tool
 
         private void refresh_Click(object sender, EventArgs e)
         {
-            accounts_.Clear();
             fetchAccounts();
         }
 
         private void purge_Click(object sender, EventArgs e)
         {
-            String accountid = getIDForAccount(account.Text);
+            String accountid = _accountDiscovery.getID64(account.Text);
 
             String msg = string.Format(
                                      "You are about to empty your server list"

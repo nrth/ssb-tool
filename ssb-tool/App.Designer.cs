@@ -84,7 +84,7 @@
             this.purge.UseVisualStyleBackColor = true;
             this.purge.Click += new System.EventHandler(this.purge_Click);
             // 
-            // Menu
+            // App
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -96,7 +96,7 @@
             this.Controls.Add(this.backup);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
-            this.Name = "Menu";
+            this.Name = "App";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Steam Server Browser Tool";
             this.ResumeLayout(false);
