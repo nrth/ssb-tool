@@ -19,7 +19,8 @@ namespace ssb_tool
         private String _userdataPath { get; set; }
         private String _historySubPath = @"\7\remote\serverbrowser_hist.vdf";
 
-        public ServerBrowserHistory(String userdataPath = @"C:\Program Files (x86)\Steam\userdata\")
+        public ServerBrowserHistory(String userdataPath = 
+                                    @"C:\Program Files (x86)\Steam\userdata\")
         {
             _userdataPath = userdataPath;
         }
@@ -29,9 +30,10 @@ namespace ssb_tool
             StreamWriter output = new StreamWriter(backup_path);
 
             String path = getHistoryPath(accountid);
-            dynamic hist = VDFConvert.ToJObject(File.ReadAllLines(path));
 
+            dynamic hist = VDFConvert.ToJObject(File.ReadAllLines(path));
             output.WriteLine(hist.Filters.favorites);
+
             output.Close();
         }
 
@@ -43,7 +45,16 @@ namespace ssb_tool
             String[] current = File.ReadAllLines(path);
 
             dynamic imp = JObject.Parse(import);
-            dynamic cur = VDFConvert.ToJObject(current);
+
+            dynamic cur = null;
+
+            try
+            {
+                cur = VDFConvert.ToJObject(current);
+            } catch (JsonReaderException)
+            {
+                cur = createEmptyList();
+            }
 
             cur.Filters.favorites = imp;
 
