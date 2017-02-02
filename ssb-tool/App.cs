@@ -12,6 +12,7 @@ using System.Text.RegularExpressions;
 using SourceSchemaParser.Utilities;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.Diagnostics;
 
 namespace ssb_tool
 {
@@ -63,6 +64,10 @@ namespace ssb_tool
             if (openFileDialog.FileName != "")
             {
                 _historyManager.Import(accountid, openFileDialog.FileName);
+
+                MessageBox.Show("Please restart Steam for the import to take effect.",
+                                "Note",
+                                MessageBoxButtons.OK);
             }
         }
 
