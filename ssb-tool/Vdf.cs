@@ -45,7 +45,9 @@ namespace ssb_tool
                         // check for wrapping json root
                         if (depth == 0) { depth++; break; };
                         // insert linebreak on further nesting
-                        if (last == JsonToken.PropertyName) { output.Write("\n"); };
+                        if (last == JsonToken.PropertyName) {
+                            output.Write("\n");
+                        };
 
                         output.WriteLine(genIndent(indent) + "{");
                         indent++;
@@ -60,13 +62,17 @@ namespace ssb_tool
                         output.WriteLine(genIndent(indent) + "}");
                         break;
                     case JsonToken.PropertyName:
-                        output.Write(genIndent(indent) + "\"" + reader.Value + "\"");
+                        output.Write(genIndent(indent) 
+                                   + "\"" 
+                                   + reader.Value 
+                                   + "\""
+                        );
                         break;
                     case JsonToken.String:
                         output.WriteLine(" \"" + reader.Value + "\"");
                         break;
                     default:
-                        throw new NotImplementedException("Unsupported entity");
+                        break;
                 }
 
                 last = reader.TokenType;
