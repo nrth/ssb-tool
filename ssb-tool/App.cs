@@ -31,7 +31,9 @@ namespace ssb_tool
 
             fetchAccounts();
 
-            account.DataSource = _accountDiscovery.getPersonaList();
+            account.DataSource = new BindingSource(_accountDiscovery.getAccounts(), null);
+            account.DisplayMember = "Value";
+            account.ValueMember = "Key";
         }
 
         private void fetchAccounts()
@@ -50,7 +52,7 @@ namespace ssb_tool
 
         private void import_Click(object sender, EventArgs e)
         {
-            String accountid = _accountDiscovery.getID3(account.Text);
+            String accountid = getSelectedAccountId();
 
             OpenFileDialog openFileDialog = new OpenFileDialog();
             openFileDialog.Filter = "JSON|*.json|TXT|*.txt";
@@ -67,7 +69,7 @@ namespace ssb_tool
         private void backup_Click(object sender, EventArgs e)
         {
 
-            String accountid = _accountDiscovery.getID3(account.Text);
+            String accountid = getSelectedAccountId();
 
             SaveFileDialog saveFileDialog = new SaveFileDialog();
             saveFileDialog.Filter = "JSON|*.json|TXT|*.txt";
@@ -84,11 +86,12 @@ namespace ssb_tool
         private void refresh_Click(object sender, EventArgs e)
         {
             fetchAccounts();
+            account.ResetBindings();
         }
 
         private void purge_Click(object sender, EventArgs e)
         {
-            String accountid = _accountDiscovery.getID3(account.Text);
+            String accountid = getSelectedAccountId();
 
             String msg = string.Format(
                                      "You are about to empty your server list"
@@ -108,6 +111,11 @@ namespace ssb_tool
             {
                 _historyManager.Purge(accountid);
             }
+        }
+
+        private String getSelectedAccountId()
+        {
+            return account.SelectedValue.ToString();
         }
     }
 }

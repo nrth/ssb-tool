@@ -42,9 +42,10 @@ namespace ssb_tool
                     
                     String personaName = localconfig.UserLocalConfigStore.
                                          friends.PersonaName.ToString();
+
                     _accounts.Add(
-                        personaName,
-                        dir.Split('\\').Last()
+                        dir.Split('\\').Last(),
+                        personaName
                     );
 
                 } catch
@@ -55,16 +56,9 @@ namespace ssb_tool
             }
         }
 
-        public List<String> getPersonaList()
+        public Dictionary<String, String> getAccounts()
         {
-            return _accounts.Keys.ToList();
-        }
-
-        public String getID3(String personaname)
-        {
-            String ID64 = "";
-            _accounts.TryGetValue(personaname, out ID64);
-            return ID64;
+            return _accounts;
         }
     }
 }
