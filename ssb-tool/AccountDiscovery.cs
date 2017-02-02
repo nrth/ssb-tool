@@ -1,11 +1,8 @@
-﻿using Newtonsoft.Json.Linq;
-using SourceSchemaParser.Utilities;
+﻿using SourceSchemaParser.Utilities;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ssb_tool
 {

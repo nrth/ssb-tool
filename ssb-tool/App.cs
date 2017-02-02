@@ -1,25 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.IO;
-using System.Text.RegularExpressions;
-using SourceSchemaParser.Utilities;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System.Diagnostics;
 
 namespace ssb_tool
 {
     // TODO
-    //              - better error handling
-    //              - dependency cleanup
-    //              - solution for unusual (other drive etc.) steam path (path discovery?)
+    // - exception handling
+    // - steam path discovery
 
     public partial class App : Form
     {
