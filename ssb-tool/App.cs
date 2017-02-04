@@ -45,9 +45,7 @@ namespace ssb_tool
             openFileDialog.Filter = "JSON|*.json|TXT|*.txt";
             openFileDialog.Title = "Import Server List Backup";
 
-            openFileDialog.ShowDialog();
-
-            if (openFileDialog.FileName != "")
+            if (openFileDialog.ShowDialog() == DialogResult.OK && openFileDialog.FileName != "")
             {
                 _historyManager.Import(accountid, openFileDialog.FileName);
 
@@ -66,9 +64,8 @@ namespace ssb_tool
             saveFileDialog.Filter = "JSON|*.json|TXT|*.txt";
             saveFileDialog.Title = "Save Server List Backup";
             saveFileDialog.FileName = "serverlist.json";
-            saveFileDialog.ShowDialog();
 
-            if (saveFileDialog.FileName != "")
+            if (saveFileDialog.ShowDialog() == DialogResult.OK && saveFileDialog.FileName != "")
             {
                 _historyManager.Backup(accountid, saveFileDialog.FileName);
             }
