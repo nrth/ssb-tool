@@ -94,9 +94,12 @@
             this.Controls.Add(this.account);
             this.Controls.Add(this.import);
             this.Controls.Add(this.backup);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
+            this.MaximumSize = new System.Drawing.Size(341, 237);
+            this.MinimumSize = new System.Drawing.Size(341, 237);
             this.Name = "App";
+            this.ShowIcon = false;
+            this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Steam Server Browser Tool";
             this.ResumeLayout(false);
