@@ -3,14 +3,10 @@ using System.Windows.Forms;
 
 namespace ssb_tool
 {
-    // TODO
-    // - exception handling
-    // - steam path discovery
-
     public partial class App : Form
     {
-        private ServerBrowserHistory _historyManager = new ServerBrowserHistory();
-        private AccountDiscovery _accountDiscovery = new AccountDiscovery();
+        private ServerBrowserHistory _hisManager = new ServerBrowserHistory();
+        private AccountDiscovery _accDiscovery = new AccountDiscovery();
 
         public App()
         {
@@ -18,7 +14,9 @@ namespace ssb_tool
 
             fetchAccounts();
 
-            account.DataSource = new BindingSource(_accountDiscovery.getAccounts(), null);
+            account.DataSource = new BindingSource(
+                                        _accDiscovery.getAccounts(),
+                                        null);
             account.DisplayMember = "Value";
             account.ValueMember = "Key";
         }
@@ -27,11 +25,11 @@ namespace ssb_tool
         {
             try
             {
-                _accountDiscovery.fetchAccounts();
+                _accDiscovery.fetchAccounts();
             }
             catch
             {
-                MessageBox.Show("Could not access steam userdata directories.",
+                MessageBox.Show("Can not access Steam userdata directories.",
                                 "Error");
                 Environment.Exit(-1);
             }
@@ -41,17 +39,26 @@ namespace ssb_tool
         {
             String accountid = getSelectedAccountId();
 
-            OpenFileDialog openFileDialog = new OpenFileDialog();
-            openFileDialog.Filter = "JSON|*.json|TXT|*.txt";
-            openFileDialog.Title = "Import Server List Backup";
+            OpenFileDialog importDialog = new OpenFileDialog();
+            importDialog.Filter = "JSON|*.json|TXT|*.txt";
+            importDialog.Title = "Import Server List Backup";
 
-            if (openFileDialog.ShowDialog() == DialogResult.OK && openFileDialog.FileName != "")
+            if (importDialog.ShowDialog() == DialogResult.OK 
+                && importDialog.FileName != "")
             {
-                _historyManager.Import(accountid, openFileDialog.FileName);
+                try
+                {
+                    _hisManager.Import(accountid, importDialog.FileName);
 
-                MessageBox.Show("Please restart Steam for the import to take effect.",
-                                "Note",
-                                MessageBoxButtons.OK);
+                    MessageBox.Show("Please restart Steam for the"
+                                  + " import to take effect.",
+                                    "Steam restart required",
+                                    MessageBoxButtons.OK);
+                } catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "Error");
+                    Application.Exit();
+                }
             }
         }
 
@@ -60,14 +67,22 @@ namespace ssb_tool
 
             String accountid = getSelectedAccountId();
 
-            SaveFileDialog saveFileDialog = new SaveFileDialog();
-            saveFileDialog.Filter = "JSON|*.json|TXT|*.txt";
-            saveFileDialog.Title = "Save Server List Backup";
-            saveFileDialog.FileName = "serverlist.json";
+            SaveFileDialog backupDialog = new SaveFileDialog();
+            backupDialog.Filter = "JSON|*.json|TXT|*.txt";
+            backupDialog.Title = "Save Server List Backup";
+            backupDialog.FileName = "serverlist.json";
 
-            if (saveFileDialog.ShowDialog() == DialogResult.OK && saveFileDialog.FileName != "")
+            if (backupDialog.ShowDialog() == DialogResult.OK 
+                && backupDialog.FileName != "")
             {
-                _historyManager.Backup(accountid, saveFileDialog.FileName);
+                try
+                {
+                    _hisManager.Backup(accountid, backupDialog.FileName);
+                } catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "Error");
+                    Application.Exit();
+                }
             }
         }
 
@@ -82,12 +97,10 @@ namespace ssb_tool
             String accountid = getSelectedAccountId();
 
             String msg = string.Format(
-                                     "You are about to empty your server list"
-                                   + "for the account {0} ({1}), all "
-                                   + "information will be lost. It is "
-                                   + "recommended to make a backup of your "
-                                   + "current server list first. \n\nAre you "
-                                   + "sure you want to continue?", 
+                                     "You are about to reset your server list"
+                                   + " for the account {0} ({1}), ALL"
+                                   + " information will be lost. \n\nAre you"
+                                   + " sure you want to continue?", 
                                    account.Text,
                                    accountid);
 
@@ -97,7 +110,14 @@ namespace ssb_tool
 
             if (confirm == DialogResult.Yes)
             {
-                _historyManager.Purge(accountid);
+                try
+                {
+                    _hisManager.Purge(accountid);
+                } catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "Error");
+                    Application.Exit();
+                }
             }
         }
 

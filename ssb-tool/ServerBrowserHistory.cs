@@ -4,10 +4,6 @@ using SourceSchemaParser.Utilities;
 using System;
 using System.IO;
 
-// TODO
-// - Exception handling
-// - Dependency cleanup
-
 namespace ssb_tool
 {
     class ServerBrowserHistory
