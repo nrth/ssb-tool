@@ -2,6 +2,8 @@
 using Newtonsoft.Json.Linq;
 using SourceSchemaParser.Utilities;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 
 namespace ssb_tool
@@ -48,7 +50,7 @@ namespace ssb_tool
                 cur = createEmptyList();
             }
 
-            cur.Filters.favorites = imp;
+            cur.Filters.favorites = merge(cur.Filters.favorites, imp);
 
             StreamWriter output = new StreamWriter(path);
 
@@ -86,6 +88,46 @@ namespace ssb_tool
         private String getHistoryPath(String accountid)
         {
             return _userdataPath + accountid + _historySubPath;
+        }
+
+        private JObject merge(JObject cur, JObject imp)
+        {
+            Hashtable cur_table = getHashTable(cur);
+            Hashtable imp_table = getHashTable(imp);
+
+            JObject output = new JObject();
+
+            int counter = 1;
+
+            foreach (DictionaryEntry i in cur_table)
+            {
+                if (!imp_table.Contains(i.Key))
+                {
+                    JToken p = cur.GetValue(i.Value.ToString());
+                    output.Add(new JProperty(counter.ToString(), p));
+                    counter++;
+                }
+            }
+
+            foreach (DictionaryEntry i in imp_table)
+            {
+                JObject t = (JObject)imp;
+                JToken p = t.GetValue(i.Value.ToString());
+                output.Add(new JProperty(counter.ToString(), p));
+                counter++;
+            }
+
+            return output;
+        }
+
+        private Hashtable getHashTable(JObject servers)
+        {
+            Hashtable ipkeytable = new Hashtable();
+            foreach (var i in servers)
+            {
+                ipkeytable.Add(i.Value["address"], i.Key);
+            }
+            return ipkeytable;
         }
     }
 }
