@@ -90,31 +90,30 @@ namespace ssb_tool
             return _userdataPath + accountid + _historySubPath;
         }
 
-        private JObject merge(JObject cur, JObject imp)
+        private JObject merge(JObject current, JObject import)
         {
-            Hashtable cur_table = getHashTable(cur);
-            Hashtable imp_table = getHashTable(imp);
+            Hashtable currentLookup = getHashTable(current);
+            Hashtable importLookup = getHashTable(import);
 
             JObject output = new JObject();
 
-            int counter = 1;
+            int propCounter = 1;
 
-            foreach (DictionaryEntry i in cur_table)
+            foreach (DictionaryEntry i in currentLookup)
             {
-                if (!imp_table.Contains(i.Key))
+                if (!importLookup.Contains(i.Key))
                 {
-                    JToken p = cur.GetValue(i.Value.ToString());
-                    output.Add(new JProperty(counter.ToString(), p));
-                    counter++;
+                    JToken entry = current.GetValue(i.Value.ToString());
+                    output.Add(new JProperty(propCounter.ToString(), entry));
+                    propCounter++;
                 }
             }
 
-            foreach (DictionaryEntry i in imp_table)
+            foreach (DictionaryEntry i in importLookup)
             {
-                JObject t = (JObject)imp;
-                JToken p = t.GetValue(i.Value.ToString());
-                output.Add(new JProperty(counter.ToString(), p));
-                counter++;
+                JToken entry = import.GetValue(i.Value.ToString());
+                output.Add(new JProperty(propCounter.ToString(), entry));
+                propCounter++;
             }
 
             return output;
@@ -122,12 +121,14 @@ namespace ssb_tool
 
         private Hashtable getHashTable(JObject servers)
         {
-            Hashtable ipkeytable = new Hashtable();
+            Hashtable lookupTable = new Hashtable();
+
             foreach (var i in servers)
             {
-                ipkeytable.Add(i.Value["address"], i.Key);
+                lookupTable.Add(i.Value["address"], i.Key);
             }
-            return ipkeytable;
+
+            return lookupTable;
         }
     }
 }
