@@ -17,6 +17,7 @@ namespace ssb_tool
             account.DataSource = new BindingSource(
                                         _accDiscovery.getAccounts(),
                                         null);
+
             account.DisplayMember = "Value";
             account.ValueMember = "Key";
         }
@@ -29,7 +30,7 @@ namespace ssb_tool
             }
             catch
             {
-                MessageBox.Show("Can not access Steam userdata directories.",
+                MessageBox.Show("Can not access Steam Userdata directories.",
                                 "Error");
                 Environment.Exit(-1);
             }
@@ -41,7 +42,7 @@ namespace ssb_tool
 
             OpenFileDialog importDialog = new OpenFileDialog();
             importDialog.Filter = "JSON|*.json|TXT|*.txt";
-            importDialog.Title = "Import Server List Backup";
+            importDialog.Title = "IMPORT";
 
             if (importDialog.ShowDialog() == DialogResult.OK 
                 && importDialog.FileName != "")
@@ -52,7 +53,7 @@ namespace ssb_tool
 
                     MessageBox.Show("Please restart Steam for the"
                                   + " import to take effect.",
-                                    "Steam restart required",
+                                    "STEAM RESTART REQUIRED",
                                     MessageBoxButtons.OK);
                 } catch (Exception ex)
                 {
@@ -68,8 +69,8 @@ namespace ssb_tool
             String accountid = getSelectedAccountId();
 
             SaveFileDialog backupDialog = new SaveFileDialog();
-            backupDialog.Filter = "JSON|*.json|TXT|*.txt";
-            backupDialog.Title = "Save Server List Backup";
+            backupDialog.Filter = "JSON|*.json";
+            backupDialog.Title = "BACKUP";
             backupDialog.FileName = "serverlist.json";
 
             if (backupDialog.ShowDialog() == DialogResult.OK 
@@ -97,7 +98,7 @@ namespace ssb_tool
             String accountid = getSelectedAccountId();
 
             String msg = string.Format(
-                                     "You are about to reset your server list"
+                                     "You are about to reset your server list and history"
                                    + " for the account {0} ({1}), ALL"
                                    + " information will be lost. \n\nAre you"
                                    + " sure you want to continue?", 
