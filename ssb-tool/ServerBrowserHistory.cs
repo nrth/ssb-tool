@@ -38,19 +38,12 @@ namespace ssb_tool
             String import = File.ReadAllText(backup_path);
             String[] current = File.ReadAllLines(path);
 
-            dynamic imp = JObject.Parse(import);
+            JObject imp = JObject.Parse(import);
+            JObject cur = VDFConvert.ToJObject(current);
 
-            dynamic cur = null;
+            JObject fav = (JObject)cur["Filters"]["favorites"];
 
-            try
-            {
-                cur = VDFConvert.ToJObject(current);
-            } catch (JsonReaderException)
-            {
-                cur = createEmptyList();
-            }
-
-            cur.Filters.favorites = merge(cur.Filters.favorites, imp);
+            cur["Filters"]["favorites"] = merge(fav, imp);
 
             StreamWriter output = new StreamWriter(path);
 
